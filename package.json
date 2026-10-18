@@ -1,0 +1,16 @@
+{
+  "name": "potentia-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "www.my-potentia.com — Next.js website and NestJS enquiries API for Potentia Software & Consultancy Services W.L.L.",
+  "workspaces": ["apps/web", "apps/api"],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run start:dev -w apps/api",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": { "node": ">=20.11" }
+}

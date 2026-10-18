@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Potentia design system (brand kit: #5D2E8E, #9D4496, #C792C8, #FFFFFF)
+   Shared building blocks used across every page.
+------------------------------------------------------------------- */
+@layer base {
+  html { scroll-padding-top: 140px; scroll-behavior: smooth; }
+  body { @apply bg-white text-fg antialiased; font-size: 15.5px; line-height: 1.65; }
+  h1, h2, h3, h4 { @apply font-sans; letter-spacing: -0.02em; text-wrap: balance; }
+  h1 { @apply font-extrabold; font-size: clamp(2.4rem, 5.6vw, 4.6rem); line-height: 1.03; }
+  h2 { @apply font-extrabold; font-size: clamp(1.9rem, 3.8vw, 3rem); line-height: 1.07; }
+  h3 { @apply font-bold; font-size: 1.25rem; line-height: 1.25; }
+  :focus-visible { outline: 3px solid #C792C8; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .label { @apply text-[0.74rem] font-bold uppercase tracking-[0.16em] text-magenta; }
+  .tag { @apply text-[0.74rem] font-bold uppercase tracking-[0.12em] text-magenta; }
+  .lead { @apply text-muted; font-size: clamp(1.05rem, 1.6vw, 1.25rem); max-width: 60ch; }
+  .section { padding-block: clamp(48px, 6vw, 88px); }
+  .section-tint { @apply bg-tint; }
+  .section-dark { @apply bg-ink text-[#F7EFF8]; }
+  .section-dark .lead { @apply text-ink-muted; }
+  .section-dark .label, .section-dark .tag { @apply text-lavender; }
+
+  .btn {
+    @apply inline-flex items-center gap-2.5 px-6 py-4 text-[0.94rem] font-bold leading-none text-white transition-all;
+    background-image: linear-gradient(90deg, #5D2E8E, #9D4496, #5D2E8E);
+    background-size: 200% 100%;
+  }
+  .btn:hover { background-position: 100% 0; box-shadow: 0 10px 24px -10px rgba(93, 46, 142, 0.6); }
+  .btn-line { @apply inline-flex items-center gap-2.5 border-2 border-fg px-6 py-[14px] text-[0.94rem] font-bold leading-none text-fg transition-colors hover:bg-fg hover:text-white; }
+  .on-dark .btn { background-image: none; @apply bg-white text-royal hover:bg-lavender-light; }
+  .on-dark .btn-line { @apply border-white/60 text-white hover:bg-white hover:text-royal; }
+
+  .tlink { @apply inline-flex w-fit items-center gap-2.5 font-bold text-fg; }
+  .tlink::after { content: ''; @apply h-[3px] w-[22px] bg-brand transition-all duration-300; }
+  .tlink:hover::after, .group:hover .tlink::after { width: 38px; }
+  .tlink .ar { @apply text-magenta; }
+  .on-dark .tlink { @apply text-white; }
+
+  .chip { @apply bg-chip px-[11px] py-2 font-mono text-[0.78rem] leading-none text-chip-fg; }
+
+  .plain { @apply flex min-w-0 flex-col gap-2.5 border-t-[3px] border-magenta pt-5; }
+  .plain p { @apply text-muted; }
+
+  .acc details { @apply border-b border-line; }
+  .acc summary { @apply flex cursor-pointer list-none items-center justify-between gap-5 py-6 font-bold; font-size: clamp(1.1rem, 2vw, 1.45rem); letter-spacing: -0.02em; }
+  .acc summary::-webkit-details-marker { display: none; }
+  .acc summary .pm { @apply relative h-9 w-9 shrink-0 rounded-full border-[1.5px] border-current transition-transform; }
+  .acc summary .pm::before, .acc summary .pm::after { content: ''; @apply absolute left-1/2 top-1/2 h-[2px] w-3 -translate-x-1/2 -translate-y-1/2 bg-current; }
+  .acc summary .pm::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .acc details[open] summary .pm { transform: rotate(45deg); }
+  .acc .body { @apply max-w-[70ch] pb-6 text-[1.05rem] text-muted; }
+  .section-dark .acc details { @apply border-ink-line; }
+  .section-dark .acc .body { @apply text-ink-muted; }
+
+  .field label, .field legend { @apply text-[0.85rem] font-semibold; }
+  .field input, .field select, .field textarea {
+    @apply w-full rounded-none border-0 border-b-2 border-line bg-white px-1 py-3 text-fg outline-none transition-colors focus:border-magenta;
+  }
+}
+
+@keyframes slprog { to { width: 100%; } }
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .writing-vertical { writing-mode: vertical-rl; }
+}

@@ -1,0 +1,16 @@
+services:
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    env_file: apps/api/.env
+    ports: ["4000:4000"]
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+        NEXT_PUBLIC_SITE_URL: https://www.my-potentia.com
+    ports: ["3000:3000"]
+    depends_on: [api]
+    restart: unless-stopped

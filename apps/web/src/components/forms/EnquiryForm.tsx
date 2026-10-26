@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from 'react';
 import { sendEnquiry, type EnquiryPayload, type SectionKey } from '@/lib/api';
 import { PREFILL_EVENT, type PrefillDetail } from '@/lib/events';
+import { trackLead } from '@/components/analytics/MetaPixel';
 
 export type Field =
   | { name: keyof EnquiryPayload; label: string; type?: 'text' | 'email' | 'tel'; required?: boolean; full?: boolean; autoComplete?: string }
@@ -50,6 +51,7 @@ export function EnquiryForm({ section, fields, submitLabel, confirmation }: Prop
     try {
       await sendEnquiry({ ...(values as Partial<EnquiryPayload>), interests: checks, section } as EnquiryPayload);
       setStatus({ kind: 'sent' });
+      trackLead(section);
       setValues({});
       setChecks([]);
     } catch (err) {

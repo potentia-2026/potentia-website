@@ -4,6 +4,8 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { COMPANY } from '@/content/site';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { MetaPixel } from '@/components/analytics/MetaPixel';
 
 const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-montserrat', display: 'swap' });
 
@@ -14,8 +16,23 @@ export const metadata: Metadata = {
   title: { default: 'Potentia – Software and consultancy for schools, businesses and banks', template: '%s' },
   description: 'Programmes, business software and banking platforms from Doha, Qatar.',
   applicationName: COMPANY.short,
-  openGraph: { type: 'website', siteName: COMPANY.name, locale: 'en_QA', url: SITE_URL },
-  twitter: { card: 'summary_large_image' },
+  keywords: ['Potentia', 'Doha', 'Qatar', 'GCC', 'banking software', 'fintech', 'payment rail', 'card switch', 'reconciliation', 'school management software', 'billing software', 'inventory software', 'career guidance', 'university admissions', 'parent coaching'],
+  openGraph: {
+    type: 'website',
+    siteName: COMPANY.name,
+    locale: 'en_QA',
+    url: SITE_URL,
+    title: 'Potentia – Banking & Fintech, Business Automation, Education & Wellbeing',
+    description: 'Software and consultancy from Doha, Qatar: payment and card platforms for banks, school, billing and inventory software for businesses, and programmes for students, parents and teachers.',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Potentia – Banking & Fintech, Business Automation, Education & Wellbeing' }],
+  },
+  twitter: { card: 'summary_large_image', images: ['/og-image.jpg'] },
+  robots: { index: true, follow: true },
+  // Add the codes Google Search Console / Facebook give you when you verify the domain:
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION ? { 'facebook-domain-verification': process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION } : undefined,
+  },
   alternates: { canonical: '/' },
 };
 
@@ -40,6 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="main" className="animate-enter">{children}</main>
         <Footer />
+        <GoogleAnalytics />
+        <MetaPixel />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       </body>
     </html>

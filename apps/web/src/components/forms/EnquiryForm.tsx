@@ -26,6 +26,7 @@ export function EnquiryForm({ section, fields, submitLabel, confirmation }: Prop
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const [values, setValues] = useState<Record<string, string>>({});
   const [checks, setChecks] = useState<string[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const onPrefill = (e: Event) => {
@@ -41,15 +42,36 @@ export function EnquiryForm({ section, fields, submitLabel, confirmation }: Prop
     return () => window.removeEventListener(PREFILL_EVENT, onPrefill);
   }, [fields]);
 
-  const set = (name: string, value: string) => setValues((v) => ({ ...v, [name]: value }));
+  const set = (name: string, value: string) => {
+    setValues((v) => ({ ...v, [name]: value }));
+    if (errors[name]) setErrors((e) => { const n = { ...e }; delete n[name]; return n; });
+  };
+
+  /** Friendly, on-brand messages instead of the browser's "Please fill out this field" bubble. */
+  function check(): Record<string, string> {
+    const out: Record<string, string> = {};
+    for (const f of fields) {
+      if (f.type === 'checks') continue;
+      const v = (values[f.name] ?? '').trim();
+      if (f.required && !v) out[f.name] = f.type === 'select' ? `Please choose your ${f.label.toLowerCase()}.` : `Please enter your ${f.label.toLowerCase()}.`;
+      else if (f.type === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) out[f.name] = 'Please enter a valid email address, e.g. name@company.com.';
+    }
+    return out;
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    if (!form.reportValidity()) return;
+    const found = check();
+    setErrors(found);
+    const firstBad = Object.keys(found)[0];
+    if (firstBad) {
+      form.querySelector<HTMLElement>(`[name="${firstBad}"]`)?.focus();
+      return;
+    }
     setStatus({ kind: 'sending' });
     try {
-      await sendEnquiry({ ...(values as Partial<EnquiryPayload>), interests: checks, section } as EnquiryPayload);
+      await sendEnquiry({ ...(values as Partial<EnquiryPayload>), interests: checks, section, requestType: /demo/i.test(submitLabel) ? 'Demo request' : 'Enquiry' } as EnquiryPayload);
       setStatus({ kind: 'sent' });
       trackLead(section);
       setValues({});
@@ -69,7 +91,7 @@ export function EnquiryForm({ section, fields, submitLabel, confirmation }: Prop
   }
 
   return (
-    <form onSubmit={onSubmit} className="relative grid gap-[18px] border border-line bg-white p-[clamp(22px,3vw,36px)] text-fg sm:grid-cols-2">
+    <form noValidate onSubmit={onSubmit} className="relative grid gap-[18px] border border-line bg-white p-[clamp(22px,3vw,36px)] text-fg sm:grid-cols-2">
       {fields.map((f) => {
         const fid = `${id}-${f.name}`;
         const span = f.full ? 'sm:col-span-2' : '';
@@ -92,15 +114,16 @@ export function EnquiryForm({ section, fields, submitLabel, confirmation }: Prop
           <div key={f.name} className={`field flex min-w-0 flex-col gap-1.5 ${span}`}>
             <label htmlFor={fid}>{f.label}{f.required && <span className="text-magenta"> *</span>}</label>
             {f.type === 'select' ? (
-              <select id={fid} name={f.name} required={f.required} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)}>
+              <select id={fid} name={f.name} aria-invalid={errors[f.name] ? true : undefined} aria-describedby={errors[f.name] ? `${fid}-err` : undefined} required={f.required} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)}>
                 <option value="">Select…</option>
                 {f.options.map((o) => <option key={o}>{o}</option>)}
               </select>
             ) : f.type === 'textarea' ? (
-              <textarea id={fid} name={f.name} required={f.required} rows={4} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)} />
+              <textarea id={fid} name={f.name} aria-invalid={errors[f.name] ? true : undefined} aria-describedby={errors[f.name] ? `${fid}-err` : undefined} required={f.required} rows={4} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)} />
             ) : (
-              <input id={fid} name={f.name} type={f.type ?? 'text'} required={f.required} autoComplete={'autoComplete' in f ? f.autoComplete : undefined} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)} />
+              <input id={fid} name={f.name} aria-invalid={errors[f.name] ? true : undefined} aria-describedby={errors[f.name] ? `${fid}-err` : undefined} type={f.type ?? 'text'} required={f.required} autoComplete={'autoComplete' in f ? f.autoComplete : undefined} value={values[f.name] ?? ''} onChange={(e) => set(f.name, e.target.value)} />
             )}
+            {errors[f.name] && <p id={`${fid}-err`} role="alert" className="text-[0.82rem] font-medium text-[#B42318]">{errors[f.name]}</p>}
           </div>
         );
       })}

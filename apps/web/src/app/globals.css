@@ -65,6 +65,7 @@
   .field input, .field select, .field textarea {
     @apply w-full rounded-none border-0 border-b-2 border-line bg-white px-1 py-3 text-fg outline-none transition-colors focus:border-magenta;
   }
+  .field [aria-invalid='true'] { @apply border-[#B42318] bg-[#FEF3F2]; }
 }
 
 @keyframes slprog { to { width: 100%; } }

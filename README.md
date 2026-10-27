@@ -109,6 +109,26 @@ Configure SMTP in `apps/api/.env` (Microsoft 365, Google Workspace, Amazon SES a
 
 ---
 
+
+## Enquiry and demo-request emails
+
+Every form on the site (Book a demo, Request a demo, Send enquiry, Contact) is emailed to
+**info@my-potentia.com** with the visitor as Reply-To, and the visitor gets a short acknowledgement.
+
+* **Built in (recommended):** the website itself handles `POST /api/enquiries`
+  (`apps/web/src/app/api/enquiries/route.ts`). Set the `SMTP_*` and `MAIL_TO` values in
+  `apps/web/.env` (see `.env.example`) – Microsoft 365, Google Workspace or your host's SMTP all work.
+  No separate API server is needed; leave `NEXT_PUBLIC_API_URL` empty.
+* **Safety net:** if SMTP is not set up yet, or the server can't send, the browser relays the
+  request through FormSubmit to info@my-potentia.com. The first time, FormSubmit emails
+  info@my-potentia.com an activation link – click it once. Turn the safety net off with
+  `NEXT_PUBLIC_FORM_FALLBACK=`.
+* **Optional:** the separate NestJS API in `apps/api` still works – set `NEXT_PUBLIC_API_URL` to its URL.
+
+Forms validate in the page (clear red messages under each missing field) instead of the
+browser's "Please fill out this field" bubble. Demo forms send the subject
+`[Banking & Fintech] Demo request from <name>, <organisation>`.
+
 ## 4. Deployment
 
 **Option A — Docker (any server or cloud VM)**

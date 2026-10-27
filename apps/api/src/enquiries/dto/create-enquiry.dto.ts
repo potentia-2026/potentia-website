@@ -10,6 +10,9 @@ export class CreateEnquiryDto {
   @IsIn(SECTIONS as unknown as string[])
   section: Section;
 
+  @IsOptional() @IsIn(['Demo request', 'Enquiry'])
+  requestType?: 'Demo request' | 'Enquiry';
+
   @Transform(trim) @IsString() @Length(2, 120)
   name: string;
 

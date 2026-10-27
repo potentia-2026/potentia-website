@@ -31,9 +31,10 @@ export class EnquiriesService {
       })
       .filter((r): r is [string, string] => r !== null);
 
-    const subject = `[${dto.section}] Website enquiry from ${dto.name}${dto.organisation ? `, ${dto.organisation}` : ''}`;
+    const kind = dto.requestType === 'Demo request' ? 'Demo request' : 'Website enquiry';
+    const subject = `[${dto.section}] ${kind} from ${dto.name}${dto.organisation ? `, ${dto.organisation}` : ''}`;
     const text = rows.map(([k, v]) => `${k}: ${v}`).join('\n');
-    const html = `<h2 style="font-family:Arial,sans-serif;color:#5D2E8E">${esc(dto.section)} enquiry</h2>
+    const html = `<h2 style="font-family:Arial,sans-serif;color:#5D2E8E">${esc(kind)} · ${esc(dto.section)}</h2>
 <table style="font-family:Arial,sans-serif;font-size:14px;border-collapse:collapse">${rows
       .map(([k, v]) => `<tr><td style="padding:6px 12px 6px 0;color:#5C4C66;vertical-align:top"><b>${esc(k)}</b></td><td style="padding:6px 0;white-space:pre-wrap">${esc(v)}</td></tr>`)
       .join('')}</table>`;
